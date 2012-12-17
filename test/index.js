@@ -1,6 +1,6 @@
 var _pipeline = require('../');
 
-var noop = function() {};
+var noop = function() { console.log(arguments); };
 var getNoopPipeline = function() {
     var pipeline = _pipeline('', 'GET');
     pipeline.flow(noop)
@@ -10,14 +10,9 @@ var getNoopPipeline = function() {
 
 describe('_pipeline', function() {
     describe('#constructor()', function() {
-        it('should be return empty object', function() {
+        it('should be return object which prototype is PipelinePlan', function() {
             var pipeline = getNoopPipeline();
-            pipeline.should.be.eql({});
-        });
-
-        it('should be return object which prototype is Pipeline', function() {
-            var pipeline = getNoopPipeline();
-            pipeline.__proto__.constructor.name.should.be.equal("Pipeline");
+            pipeline.__proto__.constructor.name.should.be.equal("PipelinePlan");
         });
 
         it('should have version "0.0.1"', function() {
@@ -35,26 +30,37 @@ describe('Pipeline', function() {
         });
     });
 
+    //describe('#pipelineFactory()', function() {
+        //it('should be return empty object', function() {
+            //var pipelineFactory = getNoopPipeline().ready();
+            //console.log(pipelineFactory());
+            //pipelineFactory().should.be.eql({});
+        //});
+    //});
+
     describe('#start()', function() {
-        it('should set request parameter', function() {
-            var pipeline = getNoopPipeline();
-            pipeline.ready(pipeline)({test: 'test'}, {test: 'test'});
-            pipeline.test.should.be.equal("test");
-        });
+        //it('should set request parameter', function() {
+            //var pipeline = getNoopPipeline();
+            //var pipelineFactory = pipeline.ready();
+            //var callback = function(error, data) {
+                //console.log(data);
+                //should.not.be.exist(error);
+            //};
+            //pipelineFactory({test: 'test'}, {test: 'test'}, callback);
+        //});
 
         it('should exec flows sequencially', function() {
                 var pipeline = _pipeline('', 'GET');
                 var flow1 = function(next) {
-                    console.log('flow1');
-                    next(null, 'test');
+                    next(null, 'flow1');
                 };
-                var flow2 = function(arguments, next) {
-                    console.log('flow2');
-                    next(null);
+                var flow2 = function(args, next) {
+                    console.log(args);
+                    next(null, 'flow2');
                 };
-                var flow3 = function(next) {
-                    console.log('flow3');
-                    next(null);
+                var flow3 = function(args, next) {
+                    console.log(args);
+                    next(null, 'flow3');
                 };
                 var callback = function(error, data) {
                     console.log('callback');
@@ -63,7 +69,7 @@ describe('Pipeline', function() {
                         .flow(flow2)
                         .flow(flow3)
                         .goes()
-                        .ready(pipeline)({test: 'test'}, {test: 'test'}, callback);
+                        .ready()({test: 'test'}, {test: 'test'}, callback);
         });
     });
 });

@@ -3,8 +3,8 @@
     "version": "0.0.1",
     "private": true,
     "dependencies": {
-        "async": ">=0.1.22",
-        "inflection": ">=1.2.3"
+        "underscore": "1.4.3",
+        "inflection": "1.2.3"
     },
     "devDependencies": {
         "mocha": ">=1.7.3",

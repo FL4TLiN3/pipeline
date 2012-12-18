@@ -52,18 +52,16 @@ describe('Pipeline', function() {
         it('should exec flows sequencially', function() {
                 var pipeline = _pipeline('', 'GET');
                 var flow1 = function(next) {
-                    next(null, 'flow1');
+                    console.log(arguments);
+                    next(null, {result: ['flow1']});
                 };
                 var flow2 = function(args, next) {
-                    console.log(args);
                     next(null, 'flow2');
                 };
                 var flow3 = function(args, next) {
-                    console.log(args);
                     next(null, 'flow3');
                 };
                 var callback = function(error, data) {
-                    console.log('callback');
                 };
                 pipeline.flow(flow1)
                         .flow(flow2)

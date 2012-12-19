@@ -1,4 +1,5 @@
-var _pipeline = require('../');
+var should = require('should'),
+    _pipeline = require('../');
 
 var noop = function() { console.log(arguments); };
 var getNoopPipeline = function() {
@@ -19,9 +20,7 @@ describe('_pipeline', function() {
             _pipeline.version.should.equal('0.0.1');
         });
     });
-});
 
-describe('Pipeline', function() {
     describe('#ready()', function() {
         it('should return pipeline middleware', function() {
             var pipeline = getNoopPipeline();
@@ -30,44 +29,5 @@ describe('Pipeline', function() {
         });
     });
 
-    //describe('#pipelineFactory()', function() {
-        //it('should be return empty object', function() {
-            //var pipelineFactory = getNoopPipeline().ready();
-            //console.log(pipelineFactory());
-            //pipelineFactory().should.be.eql({});
-        //});
-    //});
-
-    describe('#start()', function() {
-        //it('should set request parameter', function() {
-            //var pipeline = getNoopPipeline();
-            //var pipelineFactory = pipeline.ready();
-            //var callback = function(error, data) {
-                //console.log(data);
-                //should.not.be.exist(error);
-            //};
-            //pipelineFactory({test: 'test'}, {test: 'test'}, callback);
-        //});
-
-        it('should exec flows sequencially', function() {
-                var pipeline = _pipeline('', 'GET');
-                var flow1 = function(next) {
-                    console.log(arguments);
-                    next(null, {result: ['flow1']});
-                };
-                var flow2 = function(args, next) {
-                    next(null, 'flow2');
-                };
-                var flow3 = function(args, next) {
-                    next(null, 'flow3');
-                };
-                var callback = function(error, data) {
-                };
-                pipeline.flow(flow1)
-                        .flow(flow2)
-                        .flow(flow3)
-                        .goes()
-                        .ready()({test: 'test'}, {test: 'test'}, callback);
-        });
-    });
 });
+

@@ -4,7 +4,7 @@ var should = require('should'),
 var noop = function() { console.log(arguments); };
 var getNoopPipeline = function() {
     var pipeline = _pipeline('', 'GET');
-    pipeline.flow(noop)
+    pipeline.task(noop)
             .goes('/index.jade');
     return pipeline;
 };

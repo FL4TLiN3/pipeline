@@ -23,7 +23,13 @@ var exceptionTask = function(payload, nextTask) {
     }
 };
 var mapTask = function(item, callback) {
-    callback(null, item);
+    callback(null, item + 1);
+};
+var parallelTask1 = function(payload, callback) {
+    callback(null, { result1: 'foo' });
+};
+var parallelTask2 = function(payload, callback) {
+    callback(null, { result2: 'bar' });
 };
 
 describe('Pipeline', function() {
@@ -65,22 +71,49 @@ describe('Pipeline', function() {
                 });
             });
         });
+    });
 
-        it('should map successful', function() {
+    describe('#map()', function() {
+        it('should apply passed function as mapper', function() {
             pipeline('', 'GET')
             .task(iterationTask)
             .map('array', 'result', mapTask)
             .task(iterationTask)
             .goes()
             .ready()
-            ({array: [1, 2, 3, 4, 5]}, null, function(error, payload) {
+            ({ct: 1, array: [1, 2, 3, 4, 5]}, null, function(error, payload) {
                 should.not.exist(error);
                 payload.should.be.eql({
-                    req: { array: [1, 2, 3, 4, 5] },
+                    req: { ct: 1, array: [1, 2, 3, 4, 5] },
                     res: null,
-                    result: [1, 2, 3, 4, 5],
+                    array: [1, 2, 3, 4, 5],
+                    result: [2, 3, 4, 5, 6],
+                    ct: 3,
                     task1: 'task1',
-                    task3: 'task3'
+                    task2: 'task2'
+                });
+            });
+        });
+    });
+
+    describe('#parallel()', function() {
+        it('should apply passed functions as parallel tasks', function() {
+            pipeline('', 'GET')
+            .task(iterationTask)
+            .parallel([parallelTask1, parallelTask2])
+            .task(iterationTask)
+            .goes()
+            .ready()
+            ({ct: 1}, null, function(error, payload) {
+                should.not.exist(error);
+                payload.should.be.eql({
+                    req: { ct: 1 },
+                    res: null,
+                    result1: 'foo',
+                    result2: 'bar',
+                    ct: 3,
+                    task1: 'task1',
+                    task2: 'task2'
                 });
             });
         });

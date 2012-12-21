@@ -11,9 +11,9 @@ var getNoopPipeline = function() {
 
 describe('_pipeline', function() {
     describe('#constructor()', function() {
-        it('should be return object which prototype is PipelinePlan', function() {
+        it('should be return object', function() {
             var pipeline = getNoopPipeline();
-            pipeline.__proto__.constructor.name.should.be.equal("PipelinePlan");
+            pipeline.should.be.exist;
         });
 
         it('should have version "0.0.1"', function() {
@@ -28,6 +28,5 @@ describe('_pipeline', function() {
             middleware.should.be.exist;
         });
     });
-
 });
 

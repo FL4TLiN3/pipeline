@@ -1,10 +1,13 @@
-var should = require('should'),
+var path = require('path'),
+    should = require('should'),
     pipeline = require('../'),
     tasks = require('./task/');
 
+pipeline.set('taskDir', path.join(__dirname, 'task'));
+
 var noop = function() { console.log(arguments); };
 var getNoopPipeline = function() {
-    var pipeline = _pipeline('', 'GET');
+    var pipeline = _pipeline();
     pipeline.flow(noop)
             .goes('/index.jade');
     return pipeline;
@@ -36,7 +39,7 @@ var parallelTask2 = function(payload, callback) {
 describe('Pipeline', function() {
     describe('#start()', function() {
         it('should exec flows sequencially', function() {
-            pipeline('', 'GET')
+            pipeline()
             .task(tasks.iterationTask)
             .task(tasks.iterationTask)
             .task(tasks.iterationTask)
@@ -56,7 +59,7 @@ describe('Pipeline', function() {
         });
 
         it('should stop and exec callback when any step encount error', function() {
-            pipeline('', 'GET')
+            pipeline()
             .task(iterationTask)
             .task(exceptionTask)
             .task(iterationTask)
@@ -74,7 +77,7 @@ describe('Pipeline', function() {
         });
 
         it('should run as multithread', function() {
-            pipeline('', 'GET')
+            pipeline()
             .task('iterationTask')
             .task('iterationTask')
             .task('iterationTask')
@@ -89,9 +92,30 @@ describe('Pipeline', function() {
 
     describe('#map()', function() {
         it('should apply passed function as mapper', function() {
-            pipeline('', 'GET')
+            pipeline()
             .task(iterationTask)
             .map('array', 'result', mapTask)
+            .task(iterationTask)
+            .goes()
+            .ready()
+            ({ct: 1, array: [1, 2, 3, 4, 5]}, null, function(error, payload) {
+                should.not.exist(error);
+                payload.should.be.eql({
+                    req: { ct: 1, array: [1, 2, 3, 4, 5] },
+                    res: null,
+                    array: [1, 2, 3, 4, 5],
+                    result: [2, 3, 4, 5, 6],
+                    ct: 3,
+                    task1: 'task1',
+                    task2: 'task2'
+                });
+            });
+        });
+
+        it('should apply passed function as mapper as multithread', function() {
+            pipeline()
+            .task(iterationTask)
+            .map('array', 'result', 'mapTask')
             .task(iterationTask)
             .goes()
             .ready()
@@ -112,7 +136,7 @@ describe('Pipeline', function() {
 
     describe('#parallel()', function() {
         it('should apply passed functions as parallel tasks', function() {
-            pipeline('', 'GET')
+            pipeline()
             .task(iterationTask)
             .parallel([parallelTask1, parallelTask2])
             .task(iterationTask)

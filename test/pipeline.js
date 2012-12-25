@@ -1,5 +1,6 @@
 var should = require('should'),
-    pipeline = require('../');
+    pipeline = require('../'),
+    tasks = require('./task/');
 
 var noop = function() { console.log(arguments); };
 var getNoopPipeline = function() {
@@ -36,9 +37,9 @@ describe('Pipeline', function() {
     describe('#start()', function() {
         it('should exec flows sequencially', function() {
             pipeline('', 'GET')
-            .task(iterationTask)
-            .task(iterationTask)
-            .task(iterationTask)
+            .task(tasks.iterationTask)
+            .task(tasks.iterationTask)
+            .task(tasks.iterationTask)
             .goes()
             .ready()
             ({ct: 1}, null, function(error, payload) {
@@ -69,6 +70,19 @@ describe('Pipeline', function() {
                     ct: 2,
                     task1: 'task1'
                 });
+            });
+        });
+
+        it('should run as multithread', function() {
+            pipeline('', 'GET')
+            .task('iterationTask')
+            .task('iterationTask')
+            .task('iterationTask')
+            .goes()
+            .ready()
+            ({ct: 1}, null, function(error, payload) {
+                should.not.exist(error);
+                payload.ct.should.be.eql(4);
             });
         });
     });

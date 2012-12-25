@@ -121,15 +121,6 @@ describe('Pipeline', function() {
             .ready()
             ({ct: 1, array: [1, 2, 3, 4, 5]}, null, function(error, payload) {
                 should.not.exist(error);
-                payload.should.be.eql({
-                    req: { ct: 1, array: [1, 2, 3, 4, 5] },
-                    res: null,
-                    array: [1, 2, 3, 4, 5],
-                    result: [2, 3, 4, 5, 6],
-                    ct: 3,
-                    task1: 'task1',
-                    task2: 'task2'
-                });
             });
         });
     });
